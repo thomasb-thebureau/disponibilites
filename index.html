@@ -78,7 +78,7 @@ body{background:var(--creme);color:var(--encre);font-family:'Jost',sans-serif;fo
 .fut .ddot{background:var(--ambre)}
 .ctit{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:300;color:var(--encre);line-height:1.1;margin-bottom:3px;padding-left:24px}
 .csub{font-size:11px;color:var(--gc);margin-bottom:9px;padding-left:24px}
-.cdesc{font-size:12px;color:var(--gris);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cdesc{font-size:12px;color:var(--gris);line-height:1.6;margin-bottom:12px}
 .chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:13px}
 .chip{display:flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:50px;border:1px solid var(--cf);color:var(--encre);background:var(--creme)}
 .chip svg{width:9px;height:9px;fill:var(--or);flex-shrink:0}
@@ -302,7 +302,7 @@ function rowToOffice(row) {
     if (dp.length===3) dateNorm = dp[2]+'-'+(dp[1].length<2?'0':'')+dp[1]+'-'+(dp[0].length<2?'0':'')+dp[0];
   }
   var dek = Object.keys(row).find(function(k){ return k.indexOf('desc')>=0; })||'';
-  var desc = dek?(row[dek]||'').replace(/\n/g,' ').substring(0,160):'';
+  var desc = dek?(row[dek]||'').replace(/\n/g,' ').substring(0,500):'';
   return {site:siteKey,label:siteRaw,adresse:(row['adresse']||'').trim(),etage:etage,ref:ref,surface:surface,cap:cap,prix:prix,dispo:dateNorm?'future':'immediate',date:dateNorm,desc:desc,plateau:false};
 }
 
@@ -429,6 +429,13 @@ function sortData(arr) {
     }
     return 0;
   });
+}
+
+function cleanDesc(desc) {
+  if (!desc) return '';
+  /* Strip "REF : Texte - PRIX€ H.T./mois " prefix added by The Bureau */
+  return desc.replace(/^[A-Z]\d{3}[^–—\-:]*[:–—]?\s*[^-]*-\s*[\d\s\u202f]+€[^\s]*\s*(H\.T\.?\/mois\s*)?/i, '').trim()
+    || desc;
 }
 
 function render() {
@@ -666,7 +673,7 @@ function buildCard(b) {
         +'<tr><td style="padding:14px 20px 12px;background:#fdfcf9">'
           +'<p style="margin:0 0 3px;font-size:12px;color:'+GR+';font-family:Jost,Arial,sans-serif">'+surf+postes+'</p>'
           +'<p style="margin:0;font-size:11px;font-weight:500;color:'+dispo_color+';font-family:Jost,Arial,sans-serif">&#9679;&nbsp;'+dispo_label+'</p>'
-          +(b.desc?'<p style="margin:10px 0 0;font-size:12px;color:#5a5248;line-height:1.55;font-family:Jost,Arial,sans-serif">'+(isEN&&(b.descEN&&b.descEN.length>3)?b.descEN:b.desc)+'</p>':'')
+          +(b.desc?'<p style="margin:10px 0 0;font-size:12px;color:#5a5248;line-height:1.55;font-family:Jost,Arial,sans-serif">'+(isEN&&(b.descEN&&b.descEN.length>3)?b.descEN:cleanDesc(b.desc))+'</p>':'')
         +'</td></tr>'
         +'<tr><td style="border-top:1px solid #ece5d6">'
           +'<table width="100%" cellpadding="0" cellspacing="0" border="0">'
@@ -803,7 +810,7 @@ function buildEmail(data, showTotal) {
       t += '     ' + (b.dispo==='immediate'
         ? (isEN?'Available immediately':'Disponible imm\u00e9diatement')
         : (isEN?'From ':'A partir du ') + dtLbl(b.date)) + nl;
-      if (b.desc) t += nl + '     ' + (isEN&&b.descEN?b.descEN:b.desc) + nl;
+      if (b.desc) t += nl + '     ' + (isEN&&b.descEN?b.descEN:cleanDesc(b.desc)) + nl;
       t += nl;
       paliers.forEach(function(p) {
         var price = Math.round(b.prix*(1-p.d));
