@@ -592,6 +592,7 @@ document.getElementById('bsnd').addEventListener('click', function() {
   var sujet = isEN
     ? ('The Bureau \u2014 Office proposal'+(soc?' for '+soc:(prenom||nom?' for '+(prenom?prenom+' ':'')+nom:'')))
     : ('The Bureau \u2014 Proposition de bureaux'+(soc?' pour '+soc:(prenom||nom?' pour '+(prenom?prenom+' ':'')+nom:'')));
+  var civ = prenom ? (prenom + (nom ? ' ' + nom : '')) : (isEN ? 'Sir/Madam' : 'Madame, Monsieur');
   var gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1'
     +'&to='+encodeURIComponent(email)
     +'&cc='+encodeURIComponent('thomasb@thebureau.paris')
