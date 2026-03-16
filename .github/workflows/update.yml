@@ -54,7 +54,7 @@ jobs:
                   dp = date_raw.split('/')
                   if len(dp)==3: date_norm = dp[2]+'-'+dp[1].zfill(2)+'-'+dp[0].zfill(2)
               desc_raw = col(row,'description')
-              desc = re.sub(r'\s+',' ', desc_raw).strip()[:160]
+              desc = re.sub(r'\s+',' ', desc_raw).strip()[:500]
               offices.append({
                   'site':site,'label':site_raw,'adresse':col(row,'adresse'),
                   'etage':etage,'ref':col(row,'bureau'),'surface':surface,
