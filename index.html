@@ -1161,15 +1161,18 @@ function fetchData() {
         if (!offices || offices.length < 3) throw new Error('empty');
         DATA = offices;
         setStatus('live', 'Donn\u00e9es en direct');
+        /* Show update time from data._updated or Last-Modified header */
         var lm = xhr.getResponseHeader ? xhr.getResponseHeader('Last-Modified') : null;
         if (lm) {
           var d = new Date(lm);
-          var mo = ['jan.','f\u00e9v.','mars','avr.','mai','juin','juil.','\u00e9t','sept.','oct.','nov.','\u00e9c.'];
-          var mo2 = ['jan.','f\u00e9v.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
-          var hh = d.getHours().toString().padStart(2,'0');
-          var mn = d.getMinutes().toString().padStart(2,'0');
-          var dlbl = document.getElementById('dlabel');
-          if (dlbl) dlbl.textContent = d.getDate()+'\u00a0'+mo2[d.getMonth()]+' \u2014 '+hh+'h'+mn;
+          if (!isNaN(d)) {
+            var dd = d.getDate().toString().padStart(2,'0');
+            var mm = (d.getMonth()+1).toString().padStart(2,'0');
+            var hh = d.getHours().toString().padStart(2,'0');
+            var mn = d.getMinutes().toString().padStart(2,'0');
+            var dlbl = document.getElementById('dlabel');
+            if (dlbl) dlbl.textContent = 'MAJ\u00a0'+dd+'/'+mm+' - '+hh+'h'+mn;
+          }
         }
         render();
       } catch(e) { onFail(e.message); }
@@ -1209,6 +1212,25 @@ function getShareUrl() {
   render();
   fetchData();
   setInterval(fetchData, REFRESH_MS);
+  /* Also try to get last update time from updated_at.txt */
+  (function(){
+    var x = new XMLHttpRequest();
+    x.open('GET','./updated_at.txt?t='+Date.now(),true);
+    x.onreadystatechange = function(){
+      if (x.readyState!==4||x.status!==200) return;
+      var ts = x.responseText.trim();
+      if (!ts) return;
+      var d = new Date(ts);
+      if (isNaN(d)) return;
+      var dd = d.getDate().toString().padStart(2,'0');
+      var mm = (d.getMonth()+1).toString().padStart(2,'0');
+      var hh = d.getHours().toString().padStart(2,'0');
+      var mn = d.getMinutes().toString().padStart(2,'0');
+      var dlbl = document.getElementById('dlabel');
+      if (dlbl) dlbl.textContent = 'MAJ '+dd+'/'+mm+' - '+hh+'h'+mn;
+    };
+    x.send();
+  })();
 })();
 
 
