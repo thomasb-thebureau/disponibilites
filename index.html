@@ -943,7 +943,7 @@ function buildCard(b) {
           +'</div>'
           /* Description */
           +(b.isItin
-            ?'<p style="margin:6px 0 0;font-size:12px;color:#5a5248;line-height:1.55;font-family:Jost,Arial,sans-serif">'+(isEN?b.descEN:b.desc)+'</p>'
+            ?'<p style="margin:6px 0 0;font-size:12px;color:#5a5248;line-height:1.55;font-family:Jost,Arial,sans-serif">'+(isEN?(b.descEN||b.desc):b.desc)+'</p>'
              +(b.addons&&b.addons.domi?'<p style="margin:2px 0 0;font-size:11px;color:#B09438;font-family:Jost,Arial,sans-serif">+ Domiciliation — 60 € H.T./mois</p>':'')
              +(b.addons&&b.addons.casier?'<p style="margin:2px 0 0;font-size:11px;color:#B09438;font-family:Jost,Arial,sans-serif">+ Casier — 30 € H.T./mois</p>':'')
             :(b.desc?'<p style="margin:6px 0 0;font-size:12px;color:#5a5248;line-height:1.55;font-family:Jost,Arial,sans-serif">'+(isEN?(b.descEN&&b.descEN.length>3?b.descEN:cleanDesc(b.desc)):cleanDesc(b.desc))+'</p>':''))
