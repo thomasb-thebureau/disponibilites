@@ -226,6 +226,15 @@ footer{background:var(--encre);position:relative;overflow:hidden}
   .hint{display:none}
   .btn-prop svg{display:none}
 }
+.itin-card{border:2px solid var(--or2)!important;background:#f0ebe0!important}
+.itin-badge{position:absolute;top:10px;right:14px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#fff;font-family:'Jost',sans-serif;font-weight:500;padding:2px 8px;background:var(--or2);border-radius:50px}
+.itin-chip{background:rgba(176,148,56,0.10)!important;border-color:rgba(176,148,56,0.3)!important;color:var(--or2)!important}
+.itin-row{display:flex;align-items:flex-start;gap:8px;margin-top:7px}
+.itin-lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gc);min-width:44px;padding-top:4px}
+.itin-sel{flex:1;padding:5px 9px;border:1px solid var(--cf);border-radius:4px;font-size:12px;font-family:'Jost',sans-serif;color:var(--encre);background:var(--creme);cursor:pointer}
+.itin-sel:focus{outline:none;border-color:var(--or)}
+.itin-chk-lbl{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--gris)}
+.itin-addon-price{color:var(--gc);font-size:10px}
 </style>
 </head>
 <body>
@@ -321,6 +330,16 @@ var ST = {sites:{all:true},eng:'mensuel',cmin:'',cmax:'',etage:'all',dispo:'all'
 var SEL = {};
 var SEL_ORDER = [];
 var MODAL_SORT = 'custom';
+var ITIN_SITES = [
+  {id:'I',  label:'The Bureau I',   adresse:'28, Cours Albert 1er, 75008 Paris'},
+  {id:'II', label:'The Bureau II',  adresse:'16, Cours Albert 1er, 75008 Paris'},
+  {id:'III',label:'The Bureau III', adresse:'25 Rue du 4 Septembre, 75002 Paris'},
+  {id:'IV', label:'The Bureau IV',  adresse:'42 Rue Notre-Dame des Victoires, 75002 Paris'}
+];
+var ITIN_SITE   = null;
+var ITIN_REF    = 'ITIN';
+var ITIN_PRIX   = 499;
+var ITIN_ADDONS = {domi:false, casier:false};
 var EP_LANG = 'fr'; /* current preview language */
 var OPT_MODE = false;       /* Options mode active */
 var OPTIONS = [];           /* [{id, label, refs:[]}] */
@@ -356,6 +375,125 @@ function esc(s) {
 /* ============================================================
    BUILD CARD
 ============================================================ */
+
+function makeItinCard() {
+  var d = disc();
+  var isSel = !!SEL[ITIN_REF];
+  var siteData = ITIN_SITE ? ITIN_SITES.find(function(s){ return s.id===ITIN_SITE; }) : null;
+  var addons = (ITIN_ADDONS.domi?60:0) + (ITIN_ADDONS.casier?30:0);
+  var base  = ITIN_PRIX + addons;
+  var price = Math.round(ITIN_PRIX*(1-d)) + addons;
+  var save  = d > 0 ? Math.round((ITIN_PRIX - Math.round(ITIN_PRIX*(1-d))) * 12) : 0;
+  var engLbl = d===0
+    ? 'H.T./mois/pers. \u2014 tarif de r\u00e9f\u00e9rence'
+    : 'H.T./mois/pers. \u2014 engagement '+ST.eng+' <span class="echip">-'+Math.round(d*100)+'%</span>';
+  var rackHtml = d>0 ? '<span class="rack">'+base+' \u20ac</span>' : '';
+  var savHtml  = d>0 ? '<div class="sav"><svg viewBox="0 0 24 24" width="12" height="12" fill="var(--vert)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>\u00c9conomie\u00a0: '+fmt(save)+' \u20ac / an</div>' : '';
+
+  var siteOpts = '<option value="">— Choisir un site —</option>' +
+    ITIN_SITES.map(function(x){
+      return '<option value="'+x.id+'"'+(ITIN_SITE===x.id?' selected':'')+'>'+x.label+'</option>';
+    }).join('');
+
+  var div = document.createElement('div');
+  div.className = 'card itin-card' + (isSel?' sel':'');
+  div.dataset.ref = ITIN_REF;
+
+  div.innerHTML =
+    '<div class="chk"><svg viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>'+
+    '<div class="itin-badge">Starter</div>'+
+    '<div class="ctop">'+
+      '<div>'+
+        '<div class="cref">Itin\u00e9rant</div>'+
+        '<div class="csite">'+(siteData?siteData.adresse:'<em style="color:var(--or2);font-style:normal;font-size:10px">S\u00e9lectionnez un site ci-dessous</em>')+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<p class="cdesc">Acc\u00e8s en placement libre aux espaces partag\u00e9s et services The Bureau. Acc\u00e8s 24/7 au site choisi, acc\u00e8s \u00e0 la journ\u00e9e aux autres sites. Formule all-incluse.</p>'+
+    '<div class="chips">'+
+      '<span class="chip itin-chip">Placement libre</span>'+
+      '<span class="chip itin-chip">Acc\u00e8s 24/7</span>'+
+      '<span class="chip itin-chip">Global Collective</span>'+
+    '</div>'+
+    '<div class="itin-row" onclick="event.stopPropagation()">'+
+      '<label class="itin-lbl">Site</label>'+
+      '<select class="itin-sel" id="itinSiteSel">'+siteOpts+'</select>'+
+    '</div>'+
+    '<div class="itin-row" onclick="event.stopPropagation()">'+
+      '<label class="itin-lbl">Options</label>'+
+      '<div style="display:flex;gap:12px;flex-wrap:wrap">'+
+        '<label class="itin-chk-lbl"><input type="checkbox" id="itinDomi" '+(ITIN_ADDONS.domi?'checked':'')+'> Domiciliation <span class="itin-addon-price">+60\u00a0\u20ac/mois</span></label>'+
+        '<label class="itin-chk-lbl"><input type="checkbox" id="itinCasier" '+(ITIN_ADDONS.casier?'checked':'')+'> Casier <span class="itin-addon-price">+30\u00a0\u20ac/mois</span></label>'+
+      '</div>'+
+    '</div>'+
+    '<div class="pb">'+
+      '<div class="pr"><div class="pm"><sup>\u20ac</sup>'+fmt(price)+'</div>'+rackHtml+'</div>'+
+      '<div class="psub">'+engLbl+'</div>'+savHtml+
+    '</div>';
+
+  function rebuildItin() {
+    ITIN_ADDONS.domi   = !!div.querySelector('#itinDomi').checked;
+    ITIN_ADDONS.casier = !!div.querySelector('#itinCasier').checked;
+    if (SEL[ITIN_REF]) {
+      SEL[ITIN_REF].addons = JSON.parse(JSON.stringify(ITIN_ADDONS));
+      SEL[ITIN_REF].prix = ITIN_PRIX + (ITIN_ADDONS.domi?60:0) + (ITIN_ADDONS.casier?30:0);
+    }
+    var old = document.querySelector('.itin-card');
+    if (old) old.parentNode.replaceChild(makeItinCard(), old);
+    updateSelBar(); updateModalTotal();
+  }
+
+  div.querySelector('#itinSiteSel').addEventListener('change', function() {
+    ITIN_SITE = this.value || null;
+    if (SEL[ITIN_REF] && ITIN_SITE) {
+      var sd = ITIN_SITES.find(function(x){ return x.id===ITIN_SITE; });
+      if (sd) { SEL[ITIN_REF].site=ITIN_SITE; SEL[ITIN_REF].label=sd.label; SEL[ITIN_REF].adresse=sd.adresse; }
+    }
+    var old = document.querySelector('.itin-card');
+    if (old) old.parentNode.replaceChild(makeItinCard(), old);
+  });
+  div.querySelector('#itinDomi').addEventListener('change', rebuildItin);
+  div.querySelector('#itinCasier').addEventListener('change', rebuildItin);
+
+  div.addEventListener('click', function() {
+    if (!ITIN_SITE) {
+      var sel = div.querySelector('#itinSiteSel');
+      if (sel) { sel.focus(); sel.style.outline='2px solid var(--or)'; setTimeout(function(){sel.style.outline='';},1400); }
+      return;
+    }
+    if (!SEL[ITIN_REF]) {
+      var sd2 = ITIN_SITES.find(function(x){ return x.id===ITIN_SITE; });
+      SEL[ITIN_REF] = {
+        ref:ITIN_REF, site:ITIN_SITE,
+        label: sd2?sd2.label:'The Bureau',
+        adresse: sd2?sd2.adresse:'',
+        prix: ITIN_PRIX+(ITIN_ADDONS.domi?60:0)+(ITIN_ADDONS.casier?30:0),
+        cap:1, etage:0, surface:null, dispo:'immediate', date:null,
+        desc:'Acc\u00e8s en placement libre aux espaces partag\u00e9s et services The Bureau. Acc\u00e8s 24/7 au site choisi. Formule all-incluse.',
+        descEN:'Flexible access to shared spaces and The Bureau services. 24/7 access to chosen site. All-inclusive.',
+        addons: JSON.parse(JSON.stringify(ITIN_ADDONS)),
+        isItin: true
+      };
+      SEL_ORDER.push(ITIN_REF);
+    } else {
+      delete SEL[ITIN_REF];
+      SEL_ORDER = SEL_ORDER.filter(function(r){ return r!==ITIN_REF; });
+    }
+    var old2 = document.querySelector('.itin-card');
+    if (old2) old2.parentNode.replaceChild(makeItinCard(), old2);
+    updateSelBar(); updateModalTotal();
+  });
+  return div;
+}
+
+function setItinQty(optId, qty) {
+  var opt = OPTIONS.find(function(o){ return o.id===optId; });
+  if (!opt) return;
+  opt.itinQty = Math.max(1, Math.min(5, qty||1));
+  /* Also update the bureau data passed to email builder */
+  if (SEL[ITIN_REF]) SEL[ITIN_REF].itinQty = opt.itinQty;
+  renderOptPanel();
+}
+
 function makeCard(b) {
   var knownKey='tb_seen_'+b.ref; var isNew=!localStorage.getItem(knownKey); if(isNew) localStorage.setItem(knownKey,Date.now());
   var d = disc();
@@ -470,14 +608,16 @@ function render() {
   var empty = document.getElementById('empty');
   grid.innerHTML = '';
   grid.appendChild(empty);
+  var frag = document.createDocumentFragment();
+  /* Itinérant: visible si le filtre postes accepte 1 */
+  if (cmin<=1 && cmax>=1) frag.appendChild(makeItinCard());
   if (filtered.length===0) {
     empty.classList.add('on');
   } else {
     empty.classList.remove('on');
-    var frag = document.createDocumentFragment();
     filtered.forEach(function(b){ frag.appendChild(makeCard(b)); });
-    grid.appendChild(frag);
   }
+  grid.appendChild(frag);
   document.getElementById('cnt').textContent = filtered.length;
   document.getElementById('ps').textContent = filtered.length>1?'x':'';
   document.getElementById('ps2').textContent = filtered.length>1?'s':'';
@@ -494,7 +634,10 @@ function updateSelBar() {
   bar.classList.add('on');
   var d = disc();
   var selData = DATA.filter(function(b){ return !!SEL[b.ref]; });
-  var tot = selData.reduce(function(s,b){ return s+b.prix*(1-d); },0);
+  if (SEL[ITIN_REF] && !selData.find(function(b){ return b.ref===ITIN_REF; })) selData.unshift(SEL[ITIN_REF]);
+  var tot = selData.reduce(function(s,b){
+    return s + (b.isItin ? Math.round(ITIN_PRIX*(1-d))+(b.prix-ITIN_PRIX) : b.prix*(1-d));
+  },0);
   document.getElementById('scnt').textContent = refs.length;
   document.getElementById('sps').textContent = refs.length>1?'x':'';
   document.getElementById('sps2').textContent = refs.length>1?'s':'';
@@ -504,7 +647,7 @@ function updateSelBar() {
   selData.slice(0,5).forEach(function(b) {
     var sp = document.createElement('span');
     sp.className = 'sc2';
-    sp.textContent = b.ref;
+    sp.textContent = b.ref===ITIN_REF ? 'Itinérant' : b.ref;
     sp.addEventListener('click', function(e){ e.stopPropagation(); toggleSel(b.ref); });
     chips.appendChild(sp);
   });
@@ -521,9 +664,11 @@ function updateSelBar() {
 ============================================================ */
 function openModal() {
   var selData = DATA.filter(function(b){ return !!SEL[b.ref]; });
+  if (SEL[ITIN_REF] && !selData.find(function(b){ return b.ref===ITIN_REF; })) selData.unshift(SEL[ITIN_REF]);
   if (selData.length===0) return;
   function getSortedSelData() {
     var d = DATA.filter(function(b){ return !!SEL[b.ref]; });
+    if (SEL[ITIN_REF] && !d.find(function(b){ return b.ref===ITIN_REF; })) d.unshift(SEL[ITIN_REF]);
     if (MODAL_SORT==='nom') return d.sort(function(a,b){ return a.ref.localeCompare(b.ref); });
     if (MODAL_SORT==='surface') return d.sort(function(a,b){ return (a.surface||0)-(b.surface||0); });
     if (MODAL_SORT==='prix') return d.sort(function(a,b){ return a.prix-b.prix; });
@@ -538,7 +683,15 @@ function openModal() {
     var row = document.createElement('div');
     row.className = 'mrow'; row.dataset.ref = b.ref;
     var info = document.createElement('div');
-    info.innerHTML = '<div class="mref">'+esc(b.ref)+' \u2014 '+esc(b.label)+'</div><div class="mname">'+etLbl(b.etage)+' \u2014 '+b.cap+' poste'+(b.cap>1?'s':'')+(b.surface?' \u2014 '+b.surface.toLocaleString('fr-FR')+'\u00a0m\u00b2':'')+' </div>';
+    if (b.isItin) {
+      var addonLines = '';
+      if (b.addons&&b.addons.domi)   addonLines += '<div class="mname" style="color:var(--or2)">+ Domiciliation — 60 €/mois</div>';
+      if (b.addons&&b.addons.casier) addonLines += '<div class="mname" style="color:var(--or2)">+ Casier — 30 €/mois</div>';
+      var itinQtyDisplay = SEL[ITIN_REF] && SEL[ITIN_REF].itinQty && SEL[ITIN_REF].itinQty > 1 ? ' × '+SEL[ITIN_REF].itinQty+' abo.' : '';
+      info.innerHTML = '<div class="mref">Itinérant'+itinQtyDisplay+' — '+esc(b.label)+'</div><div class="mname">Placement libre'+(b.addons&&(b.addons.domi||b.addons.casier)?'':'')+' — '+((b.itinQty||1)+' abonnement'+((b.itinQty||1)>1?'s':''))+'</div>'+addonLines;
+    } else {
+      info.innerHTML = '<div class="mref">'+esc(b.ref)+' \u2014 '+esc(b.label)+'</div><div class="mname">'+etLbl(b.etage)+' \u2014 '+b.cap+' poste'+(b.cap>1?'s':'')+(b.surface?' \u2014 '+b.surface.toLocaleString('fr-FR')+'\u00a0m\u00b2':'')+' </div>';
+    }
     var right = document.createElement('div');
     right.style.cssText = 'display:flex;align-items:center';
     var pe = document.createElement('div');
@@ -669,6 +822,7 @@ document.getElementById('bsnd').addEventListener('click', function() {
   /* Respect modal sort order in the email */
   function getSortedForEmail() {
     var d = DATA.filter(function(b){ return !!SEL[b.ref]; });
+    if (SEL[ITIN_REF] && !d.find(function(b){ return b.ref===ITIN_REF; })) d.unshift(SEL[ITIN_REF]);
     if (MODAL_SORT==='nom')     return d.sort(function(a,b){ return a.ref.localeCompare(b.ref); });
     if (MODAL_SORT==='surface') return d.sort(function(a,b){ return (a.surface||0)-(b.surface||0); });
     if (MODAL_SORT==='prix')    return d.sort(function(a,b){ return a.prix-b.prix; });
@@ -721,9 +875,10 @@ function buildCard(b) {
     var postes = b.cap + (isEN?' desk'+(b.cap>1?'s':''):(b.cap>1?' postes':' poste'));
 
     var tarifs = '';
-    var basePrice = Math.round(b.prix*(1-paliers[0].d));
+    var _itinAddons = b.isItin ? (b.prix - ITIN_PRIX) : 0;
+    var basePrice = b.isItin ? Math.round(ITIN_PRIX*(1-paliers[0].d))+_itinAddons : Math.round(b.prix*(1-paliers[0].d));
     paliers.forEach(function(p, pi) {
-      var price   = Math.round(b.prix*(1-p.d));
+      var price   = b.isItin ? Math.round(ITIN_PRIX*(1-p.d))+_itinAddons : Math.round(b.prix*(1-p.d));
       var saving  = basePrice - price;
       var months  = [0,12,24,36][pi] || 0;
       var totalSaving = saving * months;
@@ -750,14 +905,12 @@ function buildCard(b) {
     });
     return '<tr><td style="padding:0 0 24px 0">'
       +'<table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #ece5d6;border-radius:4px">'
-        +'<tr><td style="background:'+INK+';padding:7px 20px 8px;border-radius:4px 4px 0 0;border-bottom:2px solid '+OR+'">'+'<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>'+'<td style="vertical-align:top;text-align:left">'+'<span style="display:block;font-family:Jost,Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:'+CR+';line-height:1.2">'+b.ref+'</span>'+'<span style="display:block;margin-top:1px;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(201,169,110,0.55);font-family:Jost,Arial,sans-serif;font-weight:500;line-height:1.3">'+b.label.toUpperCase()+'<span style="color:rgba(201,169,110,0.25)"> &middot; </span><span style="font-size:10px;color:rgba(201,169,110,0.35);letter-spacing:.3px;text-transform:none;font-weight:300">'+b.adresse+'</span></span>'+'</td>'+'<td align="right" style="vertical-align:middle"><a href="'+siteUrl+'" target="_blank" style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:'+OR+';text-decoration:none;font-family:Jost,Arial,sans-serif;border:1px solid rgba(201,169,110,0.4);border-radius:50px;padding:4px 12px;white-space:nowrap">'+siteLabel+' &rsaquo;</a></td>'+'</tr></table>'+'</td></tr>'
+        +'<tr><td style="background:'+INK+';padding:7px 20px 8px;border-radius:4px 4px 0 0;border-bottom:2px solid '+OR+'">'+'<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>'+'<td style="vertical-align:top;text-align:left">'+'<span style="display:block;font-family:Jost,Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:'+CR+';line-height:1.2">'+(b.isItin?'ITINÉRANT':b.ref)+'</span>'+'<span style="display:block;margin-top:1px;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(201,169,110,0.55);font-family:Jost,Arial,sans-serif;font-weight:500;line-height:1.3">'+b.label.toUpperCase()+'<span style="color:rgba(201,169,110,0.25)"> &middot; </span><span style="font-size:10px;color:rgba(201,169,110,0.35);letter-spacing:.3px;text-transform:none;font-weight:300">'+b.adresse+'</span></span>'+'</td>'+'<td align="right" style="vertical-align:middle"><a href="'+siteUrl+'" target="_blank" style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:'+OR+';text-decoration:none;font-family:Jost,Arial,sans-serif;border:1px solid rgba(201,169,110,0.4);border-radius:50px;padding:4px 12px;white-space:nowrap">'+siteLabel+' &rsaquo;</a></td>'+'</tr></table>'+'</td></tr>'
         +'<tr><td style="padding:14px 20px 12px;background:#fdfcf9">'
           /* ── Info chips row ── */
           +'<div style="margin:0 0 10px;display:flex;flex-wrap:wrap;gap:5px">'
-          /* Etage chip */
-          +'<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;border:1px solid #ece5d6;background:#f5f0e8;font-size:11px;font-family:Jost,Arial,sans-serif;color:#303030">'
-          +etageLabel
-          +'</span>'
+          /* Etage chip — skip for itin */
+          +(b.isItin?'':'<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;border:1px solid #ece5d6;background:#f5f0e8;font-size:11px;font-family:Jost,Arial,sans-serif;color:#303030">'+etageLabel+'</span>')
           /* Surface chip */
           +(b.surface?'<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;border:1px solid #ece5d6;background:#f5f0e8;font-size:11px;font-family:Jost,Arial,sans-serif;color:#303030">'
           +b.surface.toLocaleString('fr-FR')+'\u00a0m\u00b2</span>':'')
@@ -773,7 +926,11 @@ function buildCard(b) {
           +'</span>'
           +'</div>'
           /* Description */
-          +(b.desc?'<p style="margin:6px 0 0;font-size:12px;color:#5a5248;line-height:1.55;font-family:Jost,Arial,sans-serif">'+(isEN?(b.descEN&&b.descEN.length>3?b.descEN:cleanDesc(b.desc)):cleanDesc(b.desc))+'</p>':'')
+          +(b.isItin
+            ?'<p style="margin:6px 0 0;font-size:12px;color:#5a5248;line-height:1.55;font-family:Jost,Arial,sans-serif">'+(isEN?b.descEN:b.desc)+'</p>'
+             +(b.addons&&b.addons.domi?'<p style="margin:2px 0 0;font-size:11px;color:#B09438;font-family:Jost,Arial,sans-serif">+ Domiciliation — 60 € H.T./mois</p>':'')
+             +(b.addons&&b.addons.casier?'<p style="margin:2px 0 0;font-size:11px;color:#B09438;font-family:Jost,Arial,sans-serif">+ Casier — 30 € H.T./mois</p>':'')
+            :(b.desc?'<p style="margin:6px 0 0;font-size:12px;color:#5a5248;line-height:1.55;font-family:Jost,Arial,sans-serif">'+(isEN?(b.descEN&&b.descEN.length>3?b.descEN:cleanDesc(b.desc)):cleanDesc(b.desc))+'</p>':''))
         +'</td></tr>'
         +'<tr><td style="border-top:1px solid #ece5d6">'
           +'<table width="100%" cellpadding="0" cellspacing="0" border="0">'
@@ -1261,6 +1418,7 @@ function renderOptPanel() {
   var el = document.getElementById('optList');
   if (!el) return;
   var selData = DATA.filter(function(b){ return !!SEL[b.ref]; });
+  if (SEL[ITIN_REF] && !selData.find(function(b){ return b.ref===ITIN_REF; })) selData.unshift(SEL[ITIN_REF]);
   var html = '';
   OPTIONS.forEach(function(opt) {
     var OR2 = '#B09438';
@@ -1272,7 +1430,10 @@ function renderOptPanel() {
           + 'letter-spacing:.1em;text-transform:uppercase;font-family:\'Jost\',sans-serif;width:120px;outline:none">';
     /* Total for this option */
     var optBureaux = selData.filter(function(b){ return opt.refs.indexOf(b.ref) > -1; });
-    var total = optBureaux.reduce(function(s,b){ return s+b.prix; }, 0);
+    var total = optBureaux.reduce(function(s,b){
+      var q = b.isItin && opt.itinQty ? opt.itinQty : 1;
+      return s + b.prix * q;
+    }, 0);
     if (total > 0) {
       html += '<span style="font-size:11px;color:rgba(201,169,110,0.6)">' + fmt(total) + '\u00a0\u20ac H.T./mois</span>';
     }
@@ -1290,8 +1451,13 @@ function renderOptPanel() {
             + 'font-family:\'Jost\',sans-serif;color:'+(inOpt?'var(--or2)':'var(--gris)')+'">'
             + '<input type="checkbox" '+(inOpt?'checked':'')+' style="width:11px;height:11px;accent-color:var(--or2)" '
             + 'onchange="toggleBureauInOption(\''+b.ref+'\','+opt.id+')">'
-            + b.ref + ' <span style="color:var(--gc);font-size:10px">' + fmt(b.prix) + '\u00a0\u20ac</span>'
-            + '</label>';
+            + (b.isItin?'Itinérant':b.ref) + ' <span style="color:var(--gc);font-size:10px">' + fmt(b.prix) + '\u00a0\u20ac</span>'
+            + (b.isItin && inOpt
+              ? ' <span onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:2px;font-size:10px;margin-left:4px">'
+                + '\u00d7<input type="number" min="1" max="5" value="'+(opt.itinQty||1)+'"'
+                + ' style="width:30px;border:1px solid var(--cf);border-radius:3px;font-size:10px;padding:1px 3px;text-align:center"'
+                + ' onclick="event.stopPropagation()" onchange="event.stopPropagation();setItinQty('+opt.id+',parseInt(this.value)||1)"> abo.</span>'
+              : '') + '</label>';
     });
     html += '</div></div>';
   });
@@ -1306,8 +1472,10 @@ function buildOptionsEmail(allData, isEN, civ, soc, customMsg, LOGO_B64, CHEV_B6
 
   /* Enrich options with bureau data */
   var enrichedOpts = OPTIONS.map(function(opt) {
-    return { id:opt.id, label:opt.label,
-      bureaux: allData.filter(function(b){ return opt.refs.indexOf(b.ref) > -1; }) };
+    var bureaux = allData.filter(function(b){ return opt.refs.indexOf(b.ref) > -1; }).map(function(b) {
+      return b.isItin ? Object.assign({},b,{itinQty:opt.itinQty||1}) : b;
+    });
+    return { id:opt.id, label:opt.label, itinQty:opt.itinQty||1, bureaux:bureaux };
   }).filter(function(o){ return o.bureaux.length > 0; });
   if (!enrichedOpts.length) return buildEmail(allData, false);
 
@@ -1448,7 +1616,10 @@ function buildOptionEmail(allData, opt, isEN, LOGO_B64, CHEV_B64) {
     h += '<tr><td style="background:'+INK+';padding:7px 20px 8px;border-bottom:2px solid '+OR+'">';
     h += '<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>';
     h += '<td style="vertical-align:top">';
-    h += '<span style="display:block;font-family:Jost,Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:'+CR+';line-height:1.2">'+b.ref+'</span>';
+    h += '<span style="display:block;font-family:Jost,Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:'+CR+';line-height:1.2">'+(b.isItin?'ITINÉRANT':b.ref)+'</span>';
+    if (b.isItin && b.itinQty && b.itinQty > 1) {
+      h += '<span style="display:block;margin-top:2px;font-size:10px;letter-spacing:.5px;color:rgba(201,169,110,0.7);font-family:Jost,Arial,sans-serif;font-weight:500">' + b.itinQty + ' abonnement' + (b.itinQty>1?'s':'') + '</span>';
+    }
     h += '<span style="display:block;margin-top:1px;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(201,169,110,0.55);font-family:Jost,Arial,sans-serif;font-weight:500;line-height:1.3">'+b.label.toUpperCase()+'<span style="color:rgba(201,169,110,0.25)"> &middot; </span><span style="font-size:10px;color:rgba(201,169,110,0.35);letter-spacing:.3px;text-transform:none;font-weight:300">'+b.adresse+'</span></span>';
     h += '</td>';
     h += '<td align="right" style="vertical-align:middle">';
@@ -1459,17 +1630,21 @@ function buildOptionEmail(allData, opt, isEN, LOGO_B64, CHEV_B64) {
     h += '<tr><td style="background:#fdfcf9;padding:12px 20px 10px">';
     /* Chips */
     h += '<div style="margin:0 0 10px;display:flex;flex-wrap:wrap;gap:5px">';
-    h += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;border:1px solid #ece5d6;background:#f5f0e8;font-size:11px;font-family:Jost,Arial,sans-serif;color:#1c1c1c">'+etLblEmail+'</span>';
+    if (!b.isItin) h += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;border:1px solid #ece5d6;background:#f5f0e8;font-size:11px;font-family:Jost,Arial,sans-serif;color:#1c1c1c">'+etLblEmail+'</span>';
     if (b.surface) h += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;border:1px solid #ece5d6;background:#f5f0e8;font-size:11px;font-family:Jost,Arial,sans-serif;color:#1c1c1c">'+b.surface.toLocaleString('fr-FR')+'\u00a0m\u00b2</span>';
-    h += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;border:1px solid #ece5d6;background:#f5f0e8;font-size:11px;font-family:Jost,Arial,sans-serif;color:#1c1c1c">'+b.cap+(isEN?' desk'+(b.cap>1?'s':''):(b.cap>1?' postes':' poste'))+'</span>';
+    h += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;border:1px solid #ece5d6;background:#f5f0e8;font-size:11px;font-family:Jost,Arial,sans-serif;color:#1c1c1c">'+(b.isItin&&b.itinQty&&b.itinQty>1 ? b.itinQty+' abonnements' : b.cap+(isEN?' desk'+(b.cap>1?'s':''):(b.cap>1?' postes':' poste')))+'</span>';
     h += '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:50px;border:1px solid rgba('+( b.dispo==='immediate'?'74,122,85':'192,120,48' )+',0.3);background:rgba('+( b.dispo==='immediate'?'74,122,85':'192,120,48' )+',0.08);font-size:11px;font-family:Jost,Arial,sans-serif;font-weight:500;color:'+dispo_color+'">&#9679;&nbsp;'+dispo_label+'</span>';
     h += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;border:1px solid #ece5d6;background:#f5f0e8;font-size:11px;font-family:Jost,Arial,sans-serif;color:#7a6e5e">'+(isEN?'Access 24/7':'Acc\u00e8s 24/7')+'</span>';
     h += '</div>';
     /* Prix catalogue */
     h += '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-top:1px solid #ece5d6">';
     h += '<span style="font-size:11px;color:'+GR+';font-family:Jost,Arial,sans-serif">'+(isEN?'Monthly rate':'Tarif mensuel')+'</span>';
-    h += '<span style="font-size:15px;font-weight:500;color:'+INK+';font-family:Jost,Arial,sans-serif">'+fmt(b.prix)+'&nbsp;\u20ac <span style="font-size:10px;color:'+GR+';font-weight:300">'+vatLabel+'</span></span>';
+    h += '<span style="font-size:15px;font-weight:500;color:'+INK+';font-family:Jost,Arial,sans-serif">'+(b.isItin?fmt(ITIN_PRIX):fmt(b.prix))+'&nbsp;\u20ac <span style="font-size:10px;color:'+GR+';font-weight:300">'+(b.isItin?(isEN?'excl. VAT/pers./month':'H.T./pers./mois'):vatLabel)+'</span></span>';
     h += '</div>';
+    if (b.isItin && b.addons) {
+      if (b.addons.domi)   h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid #ece5d6"><span style="font-size:11px;color:'+GR+'">'+(isEN?'+ Mailing address':'+ Domiciliation')+'</span><span style="font-size:13px;color:'+INK+'">60&nbsp;\u20ac <span style="font-size:10px;color:'+GR+';font-weight:300">'+vatLabel+'</span></span></div>';
+      if (b.addons.casier) h += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid #ece5d6"><span style="font-size:11px;color:'+GR+'">'+(isEN?'+ Locker':'+ Casier')+'</span><span style="font-size:13px;color:'+INK+'">30&nbsp;\u20ac <span style="font-size:10px;color:'+GR+';font-weight:300">'+vatLabel+'</span></span></div>';
+    }
     /* Description */
     if (desc) h += '<p style="margin:8px 0 0;font-size:12px;color:#5a5248;line-height:1.55;font-family:Jost,Arial,sans-serif">'+desc+'</p>';
     h += '</td></tr>';
@@ -1484,9 +1659,23 @@ function buildOptionEmail(allData, opt, isEN, LOGO_B64, CHEV_B64) {
   h += '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse">';
   /* Tarifs header */
   h += '<tr><td colspan="2" style="padding:8px 16px 4px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:'+'#B09438'+';font-family:Jost,Arial,sans-serif;font-weight:600;background:#fafaf8">'+tarifsTitle+'</td></tr>';
-  var baseTotal = opt.bureaux.reduce(function(s,b){ return s+b.prix; }, 0);
+  /* baseTotal: itin = 499×qty + addons×1; others = prix */
+  var baseTotal = opt.bureaux.reduce(function(s,b) {
+    if (b.isItin) {
+      var q=b.itinQty||1, add=(b.addons?(b.addons.domi?60:0)+(b.addons.casier?30:0):0);
+      return s + ITIN_PRIX*q + add;
+    }
+    return s + b.prix;
+  }, 0);
   paliers.forEach(function(p, pi) {
-    var tot = opt.bureaux.reduce(function(s2,b2){ return s2+Math.round(b2.prix*(1-p.d)); }, 0);
+    var tot = opt.bureaux.reduce(function(s2,b2){
+      if (b2.isItin) {
+        var q2=b2.itinQty||1;
+        var add2=b2.addons?(b2.addons.domi?60:0)+(b2.addons.casier?30:0):0;
+        return s2 + Math.round(ITIN_PRIX*(1-p.d))*q2 + add2;
+      }
+      return s2 + Math.round(b2.prix*(1-p.d));
+    }, 0);
     var saving = baseTotal - tot;
     var annualSaving = Math.round(saving * 12);
     var bg = pi>0 ? '#eef5f0' : '#fafaf8';
