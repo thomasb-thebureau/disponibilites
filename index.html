@@ -1289,7 +1289,7 @@ function hsLogNote(noteContent, selData) {
 
   loginBtn.addEventListener('click', function() { netlifyIdentity.open('login'); });
 
-  netlifyIdentity.init();
+  netlifyIdentity.init({ APIUrl: 'https://thebureau.paris/.netlify/identity' });
 })();
 </script>
 
