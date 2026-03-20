@@ -44,6 +44,15 @@ jobs:
                   if kw in h and i < len(row): return row[i].strip()
               return ''
 
+          # Détection de la colonne TL une seule fois
+          def find_tl_col(hdrs):
+              for h in hdrs:
+                  hc = h.replace(' ','')
+                  if hc == 'tl' or hc.endswith('(tl)') or hc.endswith('[tl]'):
+                      return h
+              return ''
+          tl_col = find_tl_col(headers)  # headers est déjà en lowercase
+
           offices = []
           for row in rows[1:]:
               if len(row) < 8: continue
@@ -69,10 +78,12 @@ jobs:
               desc = re.sub(r'\s+',' ', desc_raw).strip()[:500]
               desc_en_raw = col(row,'description (en)')
               desc_en = re.sub(r'\s+',' ', desc_en_raw).strip()[:500] if desc_en_raw else ''
-              # Colonne TL : doit être cochée (TRUE/VRAI) pour apparaître dans Team Lounge
-              tl_raw = col(row,'(tl)') or col(row, 'tl')
-              tl = tl_raw.strip().upper() in ('TRUE','VRAI','1','OUI','YES')
-              if not tl: continue
+              # Colonne TL : doit être cochée pour apparaître dans Team Lounge
+              if tl_col:
+                  tl_raw = col(row, tl_col)
+                  tl = tl_raw.strip().upper() in ('TRUE','VRAI','1','OUI','YES')
+                  if not tl: continue
+              # Si colonne TL absente du Sheet → tout inclure (compatibilité)
               if is_available:
                   dispo_val = 'future' if date_norm else 'immediate'
               else:
