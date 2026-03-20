@@ -344,10 +344,11 @@ function rowToOffice(row) {
   }
   var dek   = Object.keys(row).find(function(k){ var kl=k.toLowerCase(); return kl.indexOf('description (fr)')>=0 || kl.indexOf('description fr')>=0 || (kl.indexOf('desc')>=0 && kl.indexOf('en')<0); })||'';
   var dekEN = Object.keys(row).find(function(k){ var kl=k.toLowerCase(); return kl.indexOf('description (en)')>=0 || kl.indexOf('description en')>=0; })||'';
-  var tlk   = Object.keys(row).find(function(k){ return k.toLowerCase().trim()==='tl' || k.toLowerCase().includes('(tl)'); })||'';
+  var tlk   = Object.keys(row).find(function(k){ var kl=k.toLowerCase().replace(/\s/g,''); return kl==='tl'||kl.endsWith('(tl)')||kl.endsWith('[tl]'); })||'';
   var tlVal = tlk ? (row[tlk]||'').toLowerCase().trim() : '';
   var tl    = tlVal==='true'||tlVal==='vrai'||tlVal==='1'||tlVal==='oui'||tlVal==='yes';
-  if (!tl) return null; /* Exclure si non coché par M (TL) */
+  if (tlk && !tl) return null; /* Colonne TL présente mais non cochée → exclure */
+  /* Si colonne TL absente du Sheet → tout inclure (compatibilité) */
   var desc   = dek  ?(row[dek]  ||'').replace(/\n/g,' ').substring(0,500):'';
   var descEN = dekEN?(row[dekEN]||'').replace(/\n/g,' ').substring(0,500):'';
   return {site:siteKey,label:siteRaw,adresse:(row['adresse']||'').trim(),etage:etage,ref:ref,surface:surface,cap:cap,prix:prix,dispo:dateNorm?'future':'immediate',date:dateNorm,desc:desc,descEN:descEN,plateau:false};
