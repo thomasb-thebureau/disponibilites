@@ -58,9 +58,9 @@ body{background:var(--creme);color:var(--encre);font-family:'Jost',sans-serif;fo
 .occ-toggle.on{background:var(--encre);color:var(--creme);border-color:var(--encre)}
 .occ-toggle.on .occ-slash{display:none}
 .occ-toggle svg{flex-shrink:0}
-.card.occupied{opacity:.45;cursor:default;pointer-events:none}
-.card.occupied .chk{display:none}
-.card.occupied:hover{box-shadow:none}
+.card.occupied{opacity:.45;background:var(--creme)}
+.card.occupied:hover{opacity:.65}
+.card.occupied .chk{opacity:.6}
 .db.occ{color:#9a8070;font-size:10px;letter-spacing:.04em;display:flex;align-items:center;gap:4px}
 .db.occ .ddot{width:6px;height:6px;border-radius:50%;background:#9a8070;display:inline-block}
 .tb{padding:11px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
@@ -344,6 +344,10 @@ function rowToOffice(row) {
   }
   var dek   = Object.keys(row).find(function(k){ var kl=k.toLowerCase(); return kl.indexOf('description (fr)')>=0 || kl.indexOf('description fr')>=0 || (kl.indexOf('desc')>=0 && kl.indexOf('en')<0); })||'';
   var dekEN = Object.keys(row).find(function(k){ var kl=k.toLowerCase(); return kl.indexOf('description (en)')>=0 || kl.indexOf('description en')>=0; })||'';
+  var tlk   = Object.keys(row).find(function(k){ return k.toLowerCase().trim()==='tl' || k.toLowerCase().includes('(tl)'); })||'';
+  var tlVal = tlk ? (row[tlk]||'').toLowerCase().trim() : '';
+  var tl    = tlVal==='true'||tlVal==='vrai'||tlVal==='1'||tlVal==='oui'||tlVal==='yes';
+  if (!tl) return null; /* Exclure si non coché par M (TL) */
   var desc   = dek  ?(row[dek]  ||'').replace(/\n/g,' ').substring(0,500):'';
   var descEN = dekEN?(row[dekEN]||'').replace(/\n/g,' ').substring(0,500):'';
   return {site:siteKey,label:siteRaw,adresse:(row['adresse']||'').trim(),etage:etage,ref:ref,surface:surface,cap:cap,prix:prix,dispo:dateNorm?'future':'immediate',date:dateNorm,desc:desc,descEN:descEN,plateau:false};
@@ -537,7 +541,7 @@ function makeCard(b) {
   div.className = 'card'+(b.plateau?' plateau':'')+(isSel?' sel':'')+(isOccupied?' occupied':'');
   div.dataset.ref = b.ref;
 
-  var chk = isOccupied ? '' : '<div class="chk"><svg viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>';
+  var chk = '<div class="chk"><svg viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>';
 
   var dbCls = isOccupied?'db occ':isImm?'db imm':'db fut';
   var dbTxt = isOccupied?'Occupé':isImm?'Disponible':'Dispo le '+dtLbl(b.date);
@@ -568,14 +572,19 @@ function makeCard(b) {
       '<span class="'+capChipCls+'">'+etLbl(b.etage)+(b.surface?' &nbsp;&middot;&nbsp; '+b.surface.toLocaleString('fr-FR')+' m²':'')+' &nbsp;&middot;&nbsp; '+b.cap+' poste'+(b.cap>1?'s':'')+'</span>'+
       '<span class="chip"><svg viewBox="0 0 24 24" width="9" height="9" fill="var(--or)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>Acc\u00e8s 24/7</span>'+largeBadge+
     '</div>'+
-    (isOccupied ? '' :
+    (isOccupied ?
+    '<div class="pb" style="opacity:.6">'+
+      '<div class="pr"><div class="pm"><sup>\u20ac</sup>'+fmt(price)+'</div></div>'+
+      '<div class="psub">H.T./mois \u2014 tarif de r\u00e9f\u00e9rence</div>'+
+    '</div>'
+    :
     '<div class="pb">'+
       '<div class="pr"><div class="pm"><sup>\u20ac</sup>'+fmt(price)+'</div>'+rackHtml+'</div>'+
       '<div class="psub">'+engLbl+'</div>'+
       savHtml+
     '</div>');
 
-  if (!isOccupied) div.addEventListener('click', function(){ toggleSel(b.ref); });
+  div.addEventListener('click', function(){ toggleSel(b.ref); });
   return div;
 }
 
@@ -627,22 +636,14 @@ function render() {
   var cmax = ST.cmax!==''?parseInt(ST.cmax):Infinity;
   var allSites = !!ST.sites.all;
   var filtered = DATA.filter(function(b) {
-    if (b.dispo==='occupied') return false; /* handled separately */
+    if (b.dispo==='occupied' && !ST.showOccupied) return false;
     if (!allSites&&!ST.sites[b.site]) return false;
     if (b.cap<cmin||b.cap>cmax) return false;
     if (ST.etage!=='all'&&b.etage!==parseInt(ST.etage)) return false;
-    if (ST.dispo!=='all'&&b.dispo!==ST.dispo) return false;
+    if (b.dispo!=='occupied' && ST.dispo!=='all'&&b.dispo!==ST.dispo) return false;
     if (ST.search&&b.ref.toLowerCase().indexOf(ST.search.toLowerCase())===-1) return false;
     return true;
   });
-  var occupied = ST.showOccupied ? DATA.filter(function(b) {
-    if (b.dispo!=='occupied') return false;
-    if (!allSites&&!ST.sites[b.site]) return false;
-    if (b.cap<cmin||b.cap>cmax) return false;
-    if (ST.etage!=='all'&&b.etage!==parseInt(ST.etage)) return false;
-    if (ST.search&&b.ref.toLowerCase().indexOf(ST.search.toLowerCase())===-1) return false;
-    return true;
-  }) : [];
   filtered = sortData(filtered);
   var grid = document.getElementById('grid');
   var empty = document.getElementById('empty');
@@ -651,31 +652,25 @@ function render() {
   var frag = document.createDocumentFragment();
   /* Itinérant: visible si le filtre postes accepte 1 */
   if (cmin<=1 && cmax>=1) frag.appendChild(makeItinCard());
-  if (filtered.length===0 && occupied.length===0) {
-    if (ST.showOccupied && DATA.filter(function(b){ return b.dispo==='occupied'; }).length===0) {
-      /* No occupied in data yet — show hint */
-      empty.innerHTML = '<h3>Aucun bureau occupé dans les données.</h3><p>Le pipeline devra être relancé après mise à jour du Sheet.</p>';
-    } else {
-      empty.innerHTML = '<h3>Aucun bureau ne correspond à vos critères.</h3><p>Modifiez les filtres ou <a href="#" id="emptyRst" style="color:var(--or2)">réinitialisez</a>.</p>';
-    }
+  if (filtered.length===0) {
+    empty.innerHTML = '<h3>Aucun bureau ne correspond à vos critères.</h3><p>Modifiez les filtres ou <a href="#" id="emptyRst" style="color:var(--or2)">réinitialisez</a>.</p>';
     empty.classList.add('on');
   } else {
     empty.innerHTML = '<h3>Aucun bureau ne correspond à vos critères.</h3><p>Modifiez les filtres ou <a href="#" id="emptyRst" style="color:var(--or2)">réinitialisez</a>.</p>';
     empty.classList.remove('on');
     filtered.forEach(function(b){ frag.appendChild(makeCard(b)); });
-    /* Séparateur si bureaux occupés présents */
-    if (occupied.length > 0 && filtered.length > 0) {
-      var sep = document.createElement('div');
-      sep.style.cssText = 'grid-column:1/-1;padding:14px 20px 8px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gc);background:var(--creme);border-top:1px solid var(--cf)';
-      sep.textContent = 'Bureaux occupés';
-      frag.appendChild(sep);
-    }
-    occupied.forEach(function(b){ frag.appendChild(makeCard(b)); });
   }
   grid.appendChild(frag);
-  document.getElementById('cnt').textContent = filtered.length;
-  document.getElementById('ps').textContent = filtered.length>1?'x':'';
-  document.getElementById('ps2').textContent = filtered.length>1?'s':'';
+  var visibleCount = filtered.filter(function(b){ return b.dispo!=='occupied'; }).length;
+  document.getElementById('cnt').textContent = visibleCount;
+  document.getElementById('ps').textContent = visibleCount>1?'x':'';
+  document.getElementById('ps2').textContent = visibleCount>1?'s':'';
+  /* Update occupied button label */
+  var occBtn2 = document.getElementById('occBtn');
+  if (occBtn2) {
+    var occTotal = DATA.filter(function(b){ return b.dispo==='occupied'; }).length;
+    occBtn2.lastChild.textContent = ' Occupés' + (occTotal > 0 ? ' (' + occTotal + ')' : '');
+  }
   updateSelBar();
 }
 
