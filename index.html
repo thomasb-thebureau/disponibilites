@@ -1423,7 +1423,7 @@ function buildEmail(data, showTotal) {
           +'<button id="epCopy" style="background:#B09438;color:#fff;border:none;border-radius:50px;'
           +'padding:9px 20px;font-size:11px;font-family:Plus Jakarta Sans,Arial,sans-serif;font-weight:600;'
           +'letter-spacing:1px;text-transform:uppercase;cursor:pointer">'
-          +'\u2460 Copier (Ctrl+A \u2192 Ctrl+C)</button>'
+          +'\u2460 Copier</button>'
           +'<button id="epGmail" style="background:#1E4035;color:#fff;border:none;border-radius:50px;'
           +'padding:9px 20px;font-size:11px;font-family:Plus Jakarta Sans,Arial,sans-serif;font-weight:600;'
           +'letter-spacing:1px;text-transform:uppercase;cursor:pointer">'
@@ -1442,10 +1442,9 @@ function buildEmail(data, showTotal) {
       +'<div style="background:#0F0F0F;border-top:1px solid rgba(176,148,56,0.12);padding:9px 24px;'
       +'font-family:Plus Jakarta Sans,Arial,sans-serif;font-size:11px;color:rgba(176,148,56,0.45);text-align:center">'
       +'\u2460 Cliquez \u00ab\u202fCopier\u202f\u00bb \u2192 '
-      +'\u2461 Appuyez Ctrl+C \u2192 '
-      +'\u2462 Cliquez \u00ab\u202fOuvrir Gmail\u202f\u00bb \u2192 '
-      +'\u2463 Cliquez dans le corps du mail \u2192 '
-      +'\u2464 Ctrl+V'
+      +'\u2461 Cliquez \u00ab\u202fOuvrir Gmail\u202f\u00bb \u2192 '
+      +'\u2462 Cliquez dans le corps du mail \u2192 '
+      +'\u2463 Ctrl+V'
       +'</div>';
 
     ov.style.display = 'flex';
@@ -1499,19 +1498,34 @@ function buildEmail(data, showTotal) {
       });
     }
     document.getElementById('epCopy').addEventListener('click', function() {
-      var el  = document.getElementById('epBody');
-      var rng = document.createRange();
-      rng.selectNodeContents(el);
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(rng);
-      var ok = false;
-      try { ok = document.execCommand('copy'); } catch(ex) {}
-      /* Do NOT removeAllRanges so user can see selection + Ctrl+C if execCommand failed */
-      this.textContent = ok
-        ? '\u2713 Copi\u00e9 \u2014 ouvrez Gmail et Ctrl+V'
-        : '\u2460 S\u00e9lectionn\u00e9 \u2014 appuyez Ctrl+C';
-      this.style.background = ok ? '#1E4035' : '#2255aa';
+      var el = document.getElementById('epBody');
+      var btn = this;
+      /* Modern: clipboard API with HTML blob */
+      if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+        var htmlContent = el.innerHTML;
+        var blob = new Blob([htmlContent], {type: 'text/html'});
+        var textBlob = new Blob([el.innerText], {type: 'text/plain'});
+        navigator.clipboard.write([new ClipboardItem({'text/html': blob, 'text/plain': textBlob})]).then(function() {
+          btn.textContent = '\u2713 Copi\u00e9 \u2014 ouvrez Gmail et Ctrl+V';
+          btn.style.background = '#1E4035';
+        }).catch(function() {
+          /* Fallback: select + execCommand */
+          var rng = document.createRange(); rng.selectNodeContents(el);
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(rng);
+          try { document.execCommand('copy'); } catch(ex) {}
+          sel.removeAllRanges();
+          btn.textContent = '\u2713 Copi\u00e9 \u2014 ouvrez Gmail et Ctrl+V';
+          btn.style.background = '#1E4035';
+        });
+      } else {
+        /* Legacy fallback */
+        var rng = document.createRange(); rng.selectNodeContents(el);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(rng);
+        try { document.execCommand('copy'); } catch(ex) {}
+        sel.removeAllRanges();
+        btn.textContent = '\u2713 Copi\u00e9 \u2014 ouvrez Gmail et Ctrl+V';
+        btn.style.background = '#1E4035';
+      }
     });
 
     /* Gmail button */
@@ -1562,7 +1576,7 @@ function buildEmail(data, showTotal) {
     +'</select>'
     +'<button id="cb2" style="background:#B09438;color:#fff;border:none;border-radius:50px;'
     +'padding:9px 20px;font-size:11px;font-family:Plus Jakarta Sans,Arial,sans-serif;font-weight:600;'
-    +'letter-spacing:1px;text-transform:uppercase;cursor:pointer">① Copier (Ctrl+A → Ctrl+C)</button>'
+    +'letter-spacing:1px;text-transform:uppercase;cursor:pointer">\u2460 Copier</button>'
     +'<button id="gb2" style="background:#1E4035;color:#fff;border:none;border-radius:50px;'
     +'padding:9px 20px;font-size:11px;font-family:Plus Jakarta Sans,Arial,sans-serif;font-weight:600;'
     +'letter-spacing:1px;text-transform:uppercase;cursor:pointer">② Ouvrir Gmail →</button>'
@@ -1614,21 +1628,24 @@ function buildEmail(data, showTotal) {
       liveOv.querySelector('#epBody2').innerHTML = newHtml;
     });
     liveOv.querySelector('#cb2').addEventListener('click', function() {
-      var el2  = liveOv.querySelector('#epBody2');
-      var btn2 = liveOv.querySelector('#cb2');
+      var el2 = liveOv.querySelector('#epBody2');
+      var btn2 = this;
       if (!el2) return;
-      var rng2 = document.createRange();
-      rng2.selectNodeContents(el2);
-      var sel2 = window.getSelection();
-      sel2.removeAllRanges();
-      sel2.addRange(rng2);
-      var ok2 = false;
-      try { ok2 = document.execCommand('copy'); } catch(ex2) {}
-      /* Keep selection visible so user can Ctrl+C if execCommand failed */
-      btn2.textContent = ok2
-        ? '✓ Copié — ouvrez Gmail et Ctrl+V'
-        : '① Sélectionné — appuyez Ctrl+C';
-      btn2.style.background = ok2 ? '#1E4035' : '#2255aa';
+      if (navigator.clipboard && typeof ClipboardItem !== 'undefined') {
+        var blob = new Blob([el2.innerHTML], {type:'text/html'});
+        var textBlob = new Blob([el2.innerText], {type:'text/plain'});
+        navigator.clipboard.write([new ClipboardItem({'text/html':blob,'text/plain':textBlob})]).then(function(){
+          btn2.textContent='\u2713 Copi\u00e9 \u2014 ouvrez Gmail et Ctrl+V'; btn2.style.background='#1E4035';
+        }).catch(function(){
+          var rng=document.createRange();rng.selectNodeContents(el2);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(rng);
+          try{document.execCommand('copy');}catch(ex){}sel.removeAllRanges();
+          btn2.textContent='\u2713 Copi\u00e9 \u2014 ouvrez Gmail et Ctrl+V'; btn2.style.background='#1E4035';
+        });
+      } else {
+        var rng=document.createRange();rng.selectNodeContents(el2);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(rng);
+        try{document.execCommand('copy');}catch(ex){}sel.removeAllRanges();
+        btn2.textContent='\u2713 Copi\u00e9 \u2014 ouvrez Gmail et Ctrl+V'; btn2.style.background='#1E4035';
+      }
     });
     liveOv.querySelector('#gb2').addEventListener('click', function() {
       window.open(gUrl2, '_blank');
