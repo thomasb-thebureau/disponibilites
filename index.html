@@ -247,7 +247,7 @@ footer{background:var(--encre);position:relative;overflow:hidden}
   .hero{padding:20px 16px 18px}
   /* Cacher le panneau filtres horizontal — remplacé par le drawer */
   .fp{display:none!important}
-  .tb{padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:8px}
+  .tb{padding:8px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;gap:8px;position:sticky;top:53px;z-index:180;background:var(--creme);border-bottom:1px solid var(--cf)}
   .rc{font-size:14px}
   .hint{display:none}
   .filter-fab{display:flex}
@@ -378,6 +378,7 @@ body.dark .db.fut{color:#e0a050}
 body.dark .fav-btn{color:rgba(255,255,255,.3)}
 body.dark .fav-btn.on{color:var(--or)}
 body.dark .rc{color:#F5EFE5}body.dark .rc strong{color:var(--or)}
+body.dark .tb{background:#1a1a1a;border-color:rgba(255,255,255,.06)}
 body.dark .hint{color:rgba(255,255,255,.5)}
 body.dark .selbar{background:#1a3a30}
 body.dark .sel-cnt{color:#F5EFE5}body.dark .sel-cnt strong{color:var(--or)}
