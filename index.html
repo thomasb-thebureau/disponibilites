@@ -426,7 +426,7 @@ body.dark .occ-toggle.on{background:var(--or);color:#1a1a1a}
 <div class="fp"><div style="display:flex;align-items:center;gap:7px"><span class="fl">Sites</span><div class="site-chips" id="sf"><span class="sc sc-all on" data-site="all">Tous</span><span class="sc" data-site="I">TB I</span><span class="sc" data-site="II">TB II</span><span class="sc" data-site="III">TB III</span><span class="sc" data-site="IV">TB IV</span></div></div><div class="fd"></div><div style="display:flex;align-items:center;gap:7px"><span class="fl">Engagement</span><div class="sr eng" id="ef"><button class="sb on" data-eng="mensuel">Mensuel <small style="opacity:.55;font-size:9px">3 mois min.</small></button><button class="sb" data-eng="12m">12 mois <small style="opacity:.55">-5%</small></button><button class="sb" data-eng="24m">24 mois <small style="opacity:.55">-10%</small></button><button class="sb" data-eng="36m">36 mois <small style="opacity:.55">-15%</small></button></div></div><div class="fd"></div><div style="display:flex;align-items:center;gap:7px"><span class="fl">Postes</span><div class="rw"><input type="number" class="ri" id="cmin" placeholder="min" min="1" max="100"><span style="font-size:11px;color:var(--gc)">—</span><input type="number" class="ri" id="cmax" placeholder="max" min="1" max="100"></div></div><div class="fd"></div><div style="display:flex;align-items:center;gap:7px"><span class="fl">Etage</span><select class="fsel" id="etf"><option value="all">Tous</option><option value="0">RDC</option><option value="1">1er</option><option value="2">2e</option><option value="3">3e</option><option value="4">4e</option><option value="5">5e</option></select></div><div class="fd"></div><div style="display:flex;align-items:center;gap:7px"><span class="fl">Dispo</span><div class="sr" id="df"><button class="sb on" data-dispo="all">Toutes</button><button class="sb" data-dispo="immediate">Immédiate</button><button class="sb" data-dispo="future">A venir</button></div></div><div class="fd"></div><div style="display:flex;align-items:center;gap:7px"><span class="fl">Tri</span><select class="fsel" id="srt"><option value="nom" selected>Référence</option><option value="pa">Prix croissant</option><option value="pd">Prix décroissant</option><option value="ca">Capacité croissante</option><option value="cd">Capacité décroissante</option><option value="dispo">Disponibilité</option></select></div><button class="reset" id="rst">Effacer</button><button class="occ-toggle" id="occBtn" title="Afficher les bureaux occupés"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="3" y1="3" x2="21" y2="21" class="occ-slash"/></svg> Occupés</button><span class="sc" id="favFilter" style="background:transparent;border:1px solid var(--or);color:var(--or);cursor:pointer">★ Favoris</span><div class="fd"></div><div style="display:flex;align-items:center;gap:7px"><span class="fl">Ref</span><input type="text" class="ri" id="search" placeholder="ex. B402" style="width:80px;letter-spacing:.06em;"></div></div>
 <div class="tb"><div class="rc"><strong id="cnt">-</strong> bureau<span id="ps"></span> disponible<span id="ps2"></span></div><span class="hint">Cliquer sur une carte pour la sélectionner</span><button class="filter-fab" id="filterFab" onclick="openFilterDrawer()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>Filtres<div class="filter-fab-dot" id="filterFabDot"></div></button></div>
 <div class="grid" id="grid"><div class="empty" id="empty"><h3>Aucun bureau ne correspond à vos critères.</h3><p>Modifiez les filtres ou <a href="#" id="emptyRst" style="color:var(--or2)">réinitialisez</a>.</p></div></div>
-<div class="selbar" id="selbar"><div class="sb-left"><div><div class="sel-cnt"><strong id="scnt">0</strong> bureau<span id="sps"></span> sélectionné<span id="sps2"></span></div><div class="sel-tot" id="stot"></div></div><div class="sel-chips" id="schips"></div><button class="sel-clr" id="sclr">Tout désélectionner</button></div><div style="display:flex;gap:8px;align-items:center"><button class="btn-prop" id="bprop"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Envoyer une proposition</button><button class="btn-csv" id="csvBtn">↓ CSV</button><button class="btn-csv" id="cmpBtn" style="display:none">⇄ Comparer</button></div></div>
+<div class="selbar" id="selbar"><div class="sb-left"><div><div class="sel-cnt"><strong id="scnt">0</strong> bureau<span id="sps"></span> sélectionné<span id="sps2"></span></div><div class="sel-tot" id="stot"></div></div><div class="sel-chips" id="schips"></div><button class="sel-clr" id="sclr">Tout désélectionner</button></div><div style="display:flex;gap:8px;align-items:center"><button class="btn-prop" id="bprop"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Envoyer une proposition</button><button class="btn-csv" id="pdfBtn" onclick="exportPDF()" title="PDF A4 Paysage">↓ PDF</button><button class="btn-csv" id="csvBtn">↓ CSV</button><button class="btn-csv" id="cmpBtn" style="display:none">⇄ Comparer</button></div></div>
 <div class="moverlay" id="mov" role="dialog" aria-modal="true" aria-label="Proposition commerciale"><div class="modal"><div class="mhdr"><div><div class="eyebrow">Proposition personnalisée</div><h2>Envoyer au client</h2></div><button class="mclose" id="mcls" aria-label="Fermer"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="mbody"><div class="msect">Coordonnées du client</div><div class="fgrid"><div class="fg"><label class="flbl">Prénom</label><input type="text" class="finp" id="fp" placeholder="Prénom"></div><div class="fg"><label class="flbl">Nom</label><input type="text" class="finp" id="fn" placeholder="Nom"></div><div class="fg"><label class="flbl">Société</label><input type="text" class="finp" id="fs" placeholder="Société"></div><div class="fg"><label class="flbl">Email</label><input type="email" class="finp" id="fe" placeholder="prenom@societe.com"></div></div><div class="msect" style="margin-top:22px;display:flex;align-items:center;justify-content:space-between"><span>Bureaux sélectionnés</span><button id="optModeBtn" onclick="toggleOptMode()" style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:50px;border:1px solid var(--cf);background:var(--creme);color:var(--gris);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;margin-left:8px">+ Mode options</button><div style="display:flex;gap:4px" id="msortBtns"><button class="msb on" data-sort="custom">Manuel</button><button class="msb" data-sort="nom">Réf.</button><button class="msb" data-sort="surface">Taille</button><button class="msb" data-sort="prix">Prix</button></div></div><div class="moffs" id="moffs"></div><div id="optPanel" style="display:none;margin:14px 0 0;padding:12px 14px;background:var(--creme);border-radius:3px;border:1px solid var(--cf)"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gc)">Options</div><button onclick="addOption()" style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:50px;border:1px solid var(--or2);background:transparent;color:var(--or2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">+ Ajouter une option</button></div><div id="optList"></div></div><div style="margin:12px 0 0"><div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gc);margin-bottom:5px">Message d’introduction <span style="font-size:9px;font-weight:300;letter-spacing:0;text-transform:none;color:var(--gc)">(personnalisable)</span></div><textarea id="customMsg" style="width:100%;border:1px solid var(--cf);border-radius:3px;padding:9px 12px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--encre);background:var(--creme);outline:none;resize:vertical;min-height:64px;line-height:1.5;transition:border .18s" onfocus="this.style.borderColor='var(--or)'" onblur="this.style.borderColor='var(--cf)'">Suite à nos échanges, veuillez trouver ci-dessous notre sélection de bureaux disponibles au sein de The Bureau.</textarea></div><div style="display:flex;gap:8px;margin:10px 0 0" id="groupToggleWrap"><div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--creme);border-radius:3px;border:1px solid var(--cf);flex:1"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;flex:1"><div style="position:relative;width:36px;height:20px;flex-shrink:0"><input type="checkbox" id="groupToggle" style="opacity:0;position:absolute;width:100%;height:100%;margin:0;cursor:pointer;z-index:2"><div id="ttrack" style="position:absolute;inset:0;border-radius:50px;background:var(--gc);transition:background .2s;pointer-events:none"></div><div id="tthumb" style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s;transform:translateX(0);pointer-events:none"></div></div><div><div id="toggleLabel" style="font-size:11px;font-weight:500;color:var(--encre)">Bureaux dissociés</div></div></label></div><div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--creme);border-radius:3px;border:1px solid var(--cf)"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none"><div style="position:relative;width:36px;height:20px;flex-shrink:0"><input type="checkbox" id="langToggle" style="opacity:0;position:absolute;width:100%;height:100%;margin:0;cursor:pointer;z-index:2"><div id="lttrack" style="position:absolute;inset:0;border-radius:50px;background:var(--gc);transition:background .2s;pointer-events:none"></div><div id="ltthumb" style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s;transform:translateX(0);pointer-events:none"></div></div><div><div id="langLabel" style="font-size:11px;font-weight:500;color:var(--encre)">FR</div></div></label></div></div><div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 0;padding:11px 14px;background:var(--creme);border-radius:3px;border:1px solid var(--cf)"><div><div style="font-size:11px;font-weight:500;color:var(--encre)">Remise commerciale</div><div style="font-size:10px;color:var(--gc)">Appliquée sur tous les paliers</div></div><div style="display:flex;align-items:center;gap:6px"><input type="number" id="remiseInput" min="0" max="25" step="1" value="0" style="width:54px;border:1px solid var(--cf);border-radius:50px;padding:5px 8px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;text-align:center;background:var(--creme);outline:none"><span style="font-size:13px;color:var(--gris)">%</span></div></div><div style="margin:10px 0 0;padding:11px 14px;background:var(--creme);border-radius:3px;border:1px solid var(--cf)"><div style="font-size:11px;font-weight:500;color:var(--encre);margin-bottom:8px">Paliers affich&eacute;s dans l'email</div><div style="display:flex;flex-wrap:wrap;gap:6px" id="tierChecks"><label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 10px;border-radius:50px;border:1px solid var(--cf);font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--encre);user-select:none;transition:all .25s"><input type="checkbox" value="0" checked style="accent-color:var(--vert)"> Mensuel</label><label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 10px;border-radius:50px;border:1px solid var(--cf);font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--encre);user-select:none;transition:all .25s"><input type="checkbox" value="1" checked style="accent-color:var(--vert)"> 12 mois</label><label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 10px;border-radius:50px;border:1px solid var(--cf);font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--encre);user-select:none;transition:all .25s"><input type="checkbox" value="2" checked style="accent-color:var(--vert)"> 24 mois</label><label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 10px;border-radius:50px;border:1px solid var(--cf);font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--encre);user-select:none;transition:all .25s"><input type="checkbox" value="3" checked style="accent-color:var(--vert)"> 36 mois</label></div></div><div class="mtot" id="mtot" style="display:none"></div></div><div class="mftr"><button class="bcnl" id="bcnl">Annuler</button><button class="bcnl" id="histBtn" style="font-size:9px">Historique</button><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="smsg" id="smsg"></div><button class="btn-txt" id="btnTxt" title="Partager le récap texte"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Récap texte</button><button class="bsnd" id="bsnd"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span class="bsnd-label">Voir &amp; envoyer</span></button></div></div></div></div>
 <div class="cmp-overlay" id="cmpOverlay"><div class="cmp-modal"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h3 style="font-size:15px;font-weight:600">Comparaison</h3><button class="mclose" id="cmpClose"><svg viewBox="0 0 24 24" width="17" height="17"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg></button></div><div id="cmpBody"></div></div></div>
 <div class="hist-overlay" id="histOverlay"><div class="hist-modal"><div style="padding:16px 20px;border-bottom:1px solid var(--cf);display:flex;justify-content:space-between;align-items:center"><h3 style="font-size:15px;font-weight:600">Historique</h3><button class="mclose" id="histClose"><svg viewBox="0 0 24 24" width="17" height="17"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/></svg></button></div><div id="histBody"></div></div></div>
@@ -2578,6 +2578,192 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+
+/* ============================================================
+   PDF EXPORT — A4 landscape (replicated from BrokerLounge)
+============================================================ */
+function exportPDF(){
+  var selData = DATA.filter(function(b){ return !!SEL[b.ref]; });
+  if(SEL[ITIN_REF]){var it=SEL[ITIN_REF];if(!selData.find(function(b){return b.ref===ITIN_REF}))selData.unshift(it)}
+  if(selData.length===0){showToast('Selectionnez des bureaux');return}
+
+  var _selTiers = getSelectedTiers();
+  var remEl=document.getElementById('remiseInput');
+  var remise=remEl?Math.min(25,Math.max(0,parseFloat(remEl.value)||0))/100:0;
+  var allTiers=[
+    {key:'mensuel',label:'Mensuel (3 mois min.)',d:remise},
+    {key:'12m',label:'12 mois',d:1-(1-0.05)*(1-remise)},
+    {key:'24m',label:'24 mois',d:1-(1-0.10)*(1-remise)},
+    {key:'36m',label:'36 mois',d:1-(1-0.15)*(1-remise)}
+  ];
+  var activeTiers = allTiers.filter(function(_,i){ return _selTiers.indexOf(i)>-1; });
+  if(activeTiers.length===0) activeTiers=[allTiers[0]];
+
+  var OR='#B09438',OR2='#7A6015',JADE='#1E4035',INK='#0F0F0F',CR='#F5EFE5',GR='#5a5248',LIGHT='#faf8f4',IVORY='#F5EFE5';
+  var GFONTS='https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap';
+  var today=new Date();
+  var dateFr=today.getDate().toString().padStart(2,'0')+'/'+(today.getMonth()+1).toString().padStart(2,'0')+'/'+today.getFullYear();
+  var fmtEur=function(n){return fmt(n)+'\u00a0\u20ac'};
+  var etStr=function(e){return e===0?'RDC':e===1?'1er':e+'e'};
+  var dispoStr=function(b){return b.dispo==='immediate'?'Imm\u00e9diate':('A partir du '+dtLbl(b.date))};
+  var logoUrl=window.location.origin+'/logo.svg';
+  var chevronsUrl=window.location.origin+'/chevrons.svg';
+
+  var services=[
+    'Acc\u00e8s 24h/24 et 7j/7 dans l\u2019arrondissement choisi, et du lundi au vendredi de 8h \u00e0 19h aux autres espaces The Bureau.',
+    'Acc\u00e8s \u00e0 l\u2019ensemble des espaces communs\u00a0: coworking, espace restauration, patio, douches, salle de sport, cabines t\u00e9l\u00e9phoniques.',
+    'Domiciliation et rangement tiroir inclus.',
+    'T\u00e9l\u00e9phone fixe, communications France et monde incluses (fixe et portable).',
+    'Forfait impression : 200 copies N&B et 25 couleurs par mois et par personne.',
+    'Acc\u00e8s illimit\u00e9 aux tisaneries\u00a0: caf\u00e9, th\u00e9, eau filtr\u00e9e et fruits frais \u00e0 discr\u00e9tion.',
+    'Programmation \u00e9v\u00e9nementielle\u00a0: soir\u00e9es, vernissages, partenariats et ap\u00e9ritivo du jeudi.',
+    'Mobilier\u00a0: bureau, chaise et caisson.',
+    'Conciergerie\u00a0: accueil clients, courrier, taxis, r\u00e9servations de salles.',
+    'Global Collective\u00a0: 2 jours/mois dans les espaces partenaires (globalcollective.co).',
+    'All-inclus\u00a0: \u00e9lectricit\u00e9, m\u00e9nage, charges, climatisation, chauffage.'
+  ];
+  var conditions=[
+    '3 mois d\u2019engagement minimum puis contrat renouvel\u00e9 au mois le mois jusqu\u2019au pr\u00e9avis.',
+    'D\u00e9p\u00f4t de garantie : 2 mois d\u2019abonnement H.T. (pr\u00e9cis\u00e9 dans le contrat).',
+    'Frais d\u2019installation : 100\u00a0\u20ac H.T. par poste capacitaire.',
+    'Pr\u00e9avis de d\u00e9part : un mois plus le mois en cours.'
+  ];
+
+  var totals={};
+  activeTiers.forEach(function(t){totals[t.key]=selData.reduce(function(s,b){return s+Math.round(b.prix*(1-t.d))},0)});
+
+  var h='<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>S\u00e9lection \u2014 The Bureau Team Lounge</title>';
+  h+='<meta name="viewport" content="width=1200,initial-scale=1"/>';
+  h+='<link href="'+GFONTS+'" rel="stylesheet"/>';
+  h+='<style>';
+  h+='@page{size:A4 landscape;margin:0}';
+  h+='*{box-sizing:border-box;margin:0;padding:0}';
+  h+='html,body{font-family:\'Plus Jakarta Sans\',Arial,sans-serif;color:'+INK+';background:#fff;font-size:10px;line-height:1.45;-webkit-print-color-adjust:exact;print-color-adjust:exact;-webkit-text-size-adjust:100%;text-size-adjust:100%}';
+  h+='.page{width:297mm;min-height:210mm;padding:10mm 12mm;display:flex;flex-direction:column;position:relative;margin:0 auto}';
+  h+='.btn-print{position:fixed;top:12px;right:12px;background:'+JADE+';color:#fff;border:none;border-radius:50px;padding:9px 20px;font-family:inherit;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:999}';
+  h+='@media print{.no-print{display:none!important}.page{padding:8mm 10mm}}';
+  h+='header.hd{background:'+IVORY+';padding:14px 22px;border-radius:4px;border:1px solid #ece5d6;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:16px}';
+  h+='.hd-logo{height:38px;width:auto;flex-shrink:0}';
+  h+='.hd-mid{flex:1;text-align:left;padding-left:18px;border-left:1px solid rgba(30,64,53,.18);margin-left:4px}';
+  h+='.hd-mid .eyebrow{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:'+OR2+';font-weight:600;margin-bottom:3px}';
+  h+='.hd-mid h1{font-size:22px;font-weight:300;color:'+INK+';line-height:1}';
+  h+='.hd-mid h1 em{font-style:normal;font-weight:700;color:'+JADE+'}';
+  h+='.hd-r{text-align:right;font-size:10px;color:'+GR+';line-height:1.5;white-space:nowrap}';
+  h+='.hd-r strong{font-weight:700;color:'+INK+';font-size:11px;letter-spacing:.02em}';
+  h+='.hd-r .tiers-inline{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:'+OR2+';font-weight:600;margin-top:2px}';
+  h+='main.body{flex:1;display:flex;flex-direction:column}';
+  h+='table.grid{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:9.5px;border-radius:4px;overflow:hidden;box-shadow:0 0 0 1px #ece5d6}';
+  h+='table.grid th{background:'+JADE+';color:'+CR+';text-align:left;padding:8px 10px;font-weight:600;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase}';
+  h+='table.grid th.num,table.grid td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}';
+  h+='table.grid th.ctr,table.grid td.ctr{text-align:center}';
+  h+='table.grid td{padding:8px 10px;border-bottom:1px solid #ece5d6;vertical-align:middle}';
+  h+='table.grid tr:nth-child(even) td{background:'+LIGHT+'}';
+  h+='table.grid td.price{font-weight:600;color:'+INK+'}';
+  h+='table.grid tr.totrow td{background:'+IVORY+';border-top:2px solid '+JADE+';border-bottom:none;font-weight:700;padding:10px}';
+  h+='table.grid tr.totrow td.num{color:'+JADE+';font-size:12px}';
+  h+='.ref-badge{display:inline-block;background:'+JADE+';color:'+CR+';padding:3px 9px;border-radius:50px;font-size:9px;font-weight:600;letter-spacing:.06em}';
+  h+='.bottom{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:auto;margin-bottom:10px}';
+  h+='.box{background:'+LIGHT+';border:1px solid #ece5d6;border-radius:4px;padding:9px 12px}';
+  h+='.box h3{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:'+OR2+';margin-bottom:6px;font-weight:700}';
+  h+='.box ul{list-style:none}';
+  h+='.box li{position:relative;padding-left:11px;margin-bottom:2px;font-size:7.5px;color:'+GR+';line-height:1.3}';
+  h+='.box li:last-child{margin-bottom:0}';
+  h+='.box li::before{content:\'\u2713\';position:absolute;left:0;top:0;color:'+JADE+';font-weight:700;font-size:7.5px}';
+  h+='.box.cond li::before{content:\'\u2022\';color:'+OR2+'}';
+  h+='footer.ft{background:'+JADE+';color:'+CR+';padding:12px 22px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:auto}';
+  h+='footer.ft .ft-l{display:flex;align-items:center;gap:14px;font-size:10px;line-height:1.5}';
+  h+='footer.ft .ft-chev{height:26px;width:auto;opacity:.9;flex-shrink:0}';
+  h+='footer.ft .ft-l strong{color:#fff;font-weight:700;font-size:11px}';
+  h+='footer.ft .ft-l a{color:'+CR+';text-decoration:none}';
+  h+='footer.ft .ft-r{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,239,229,.75);text-align:right;line-height:1.6}';
+  h+='footer.ft .ft-r strong{color:'+OR+';font-weight:600}';
+  h+='</style></head><body>';
+  h+='<button class="btn-print no-print" onclick="window.print()">Imprimer / PDF</button>';
+  h+='<div class="page">';
+
+  /* HEADER */
+  h+='<header class="hd">';
+  h+='<img class="hd-logo" src="'+logoUrl+'" alt="The Bureau"/>';
+  h+='<div class="hd-mid"><div class="eyebrow">Team Lounge \u2014 Proposition</div><h1>S\u00e9lection <em>bureaux</em></h1></div>';
+  h+='<div class="hd-r"><strong>'+dateFr+'</strong><br>'+selData.length+' bureau'+(selData.length>1?'x':'')+'<div class="tiers-inline">'+activeTiers.map(function(t){return t.label+(t.d>0?' -'+Math.round(t.d*1000)/10+'%':'')}).join(' \u00b7 ')+'</div></div>';
+  h+='</header>';
+  h+='<main class="body">';
+
+  function tableRows(list){
+    var out='';
+    list.forEach(function(b){
+      out+='<tr>';
+      out+='<td class="ctr"><span class="ref-badge">'+esc(b.ref)+'</span></td>';
+      out+='<td><strong>'+esc(b.label||'')+'</strong><br><span style="color:'+GR+';font-size:8.5px">'+esc(b.adresse||'')+'</span></td>';
+      out+='<td class="ctr">'+etStr(b.etage)+'</td>';
+      out+='<td class="num">'+(b.surface!=null?b.surface.toLocaleString('fr-FR'):'\u2014')+'</td>';
+      out+='<td class="ctr">'+b.cap+'</td>';
+      out+='<td>'+dispoStr(b)+'</td>';
+      out+='<td style="font-size:8.5px;color:'+GR+';line-height:1.45">'+esc(cleanDesc(b.desc||''))+'</td>';
+      activeTiers.forEach(function(t){out+='<td class="num price">'+fmtEur(Math.round(b.prix*(1-t.d)))+'</td>'});
+      out+='</tr>';
+    });
+    return out;
+  }
+  function tableHeader(){
+    var th='<thead><tr>';
+    th+='<th class="ctr" style="width:54px">R\u00e9f.</th><th style="width:140px">Site</th><th class="ctr" style="width:44px">\u00c9tage</th><th class="num" style="width:40px">m\u00b2</th><th class="ctr" style="width:44px">Postes</th><th style="width:96px">Dispo.</th><th>Description</th>';
+    activeTiers.forEach(function(t){th+='<th class="num">'+t.label+(t.d>0?' <span style="color:'+OR+';font-weight:500">-'+Math.round(t.d*1000)/10+'%</span>':'')+'</th>'});
+    th+='</tr></thead>';
+    return th;
+  }
+
+  var hasOpts=typeof OPT_MODE!=='undefined'&&OPT_MODE&&typeof OPTIONS!=='undefined'&&OPTIONS.some(function(o){return o.refs.length>0});
+  if(hasOpts){
+    OPTIONS.forEach(function(opt){
+      var optB=selData.filter(function(b){return opt.refs.indexOf(b.ref)>=0});
+      if(optB.length===0)return;
+      var optT={};activeTiers.forEach(function(t){optT[t.key]=optB.reduce(function(s,b){return s+Math.round(b.prix*(1-t.d))},0)});
+      h+='<div style="background:'+OR2+';color:#fff;padding:8px 14px;border-radius:4px 4px 0 0;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:8px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)">'+esc(opt.label)+' \u2014 '+optB.length+' bureau'+(optB.length>1?'x':'')+'</div>';
+      h+='<table class="grid" style="margin-top:0;border-radius:0 0 4px 4px">';
+      h+=tableHeader();
+      h+='<tbody>'+tableRows(optB);
+      h+='<tr class="totrow"><td colspan="7" style="text-align:right;text-transform:uppercase;font-size:9px;letter-spacing:.12em;color:'+GR+'">Total '+esc(opt.label)+' H.T.</td>';
+      activeTiers.forEach(function(t){h+='<td class="num">'+fmtEur(optT[t.key])+'</td>'});
+      h+='</tr></tbody></table>';
+    });
+  } else {
+    h+='<table class="grid">';
+    h+=tableHeader();
+    h+='<tbody>'+tableRows(selData);
+    h+='<tr class="totrow"><td colspan="7" style="text-align:right;text-transform:uppercase;font-size:9px;letter-spacing:.12em;color:'+GR+'">Total mensuel H.T.</td>';
+    activeTiers.forEach(function(t){h+='<td class="num">'+fmtEur(totals[t.key])+'</td>'});
+    h+='</tr></tbody></table>';
+  }
+
+  /* BOTTOM: services + conditions */
+  h+='<div class="bottom">';
+  h+='<div class="box"><h3>Tout inclus \u2014 tarifs H.T.</h3><ul>';
+  services.forEach(function(s){h+='<li>'+s+'</li>'});
+  h+='</ul></div>';
+  h+='<div class="box cond"><h3>Conditions contractuelles</h3><ul>';
+  conditions.forEach(function(s){h+='<li>'+s+'</li>'});
+  h+='</ul></div>';
+  h+='</div>';
+  h+='</main>';
+
+  /* FOOTER jade */
+  h+='<footer class="ft">';
+  h+='<div class="ft-l"><img class="ft-chev" src="'+chevronsUrl+'" alt=""/>';
+  h+='<div><strong>Thomas Bougeard</strong> \u00b7 Directeur Commercial<br>+33 6 59 23 15 92 \u00b7 <a href="mailto:thomasb@thebureau.paris">thomasb@thebureau.paris</a> \u00b7 <a href="https://www.thebureau.paris">thebureau.paris</a></div>';
+  h+='</div>';
+  h+='<div class="ft-r">The Bureau Paris<br><strong>75002 \u00b7 75008</strong></div>';
+  h+='</footer>';
+  h+='</div></body></html>';
+
+  var blob=new Blob([h],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var isMob=/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if(isMob){var a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();document.body.removeChild(a)}
+  else{var win=window.open(url,'_blank');if(!win)window.location.href=url}
+  setTimeout(function(){URL.revokeObjectURL(url)},60000);
+}
 
 /* ============================================================
    FEATURES: Toast, Session, Share, Favorites, Compare,
